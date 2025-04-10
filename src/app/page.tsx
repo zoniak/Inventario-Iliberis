@@ -36,6 +36,7 @@ type LoanHistoryItem = {
   quantity: number;
   borrower: string;
   borrowDate: Date;
+  returned?: boolean;
 };
 
 export default function Home() {
@@ -106,24 +107,28 @@ export default function Home() {
   };
 
   const returnItemToInventory = (loan: LoanHistoryItem) => {
-      const itemToUpdate = inventory.find(item => item.name === loan.name);
-      if (itemToUpdate) {
-          const updatedInventory = inventory.map(item => {
-              if (item.id === itemToUpdate.id) {
-                  return {
-                      ...item,
-                      quantity: item.quantity + loan.quantity,
-                      status: 'In Storage',
-                      borrower: undefined,
-                      borrowDate: undefined,
-                      borrowedQuantity: undefined,
-                  };
-              }
-              return item;
-          });
-          setInventory(updatedInventory);
-          setLoanHistory(prevHistory => prevHistory.filter(item => item.id !== loan.id));
-      }
+    const itemToUpdate = inventory.find(item => item.name === loan.name);
+    if (itemToUpdate) {
+      const updatedInventory = inventory.map(item => {
+        if (item.id === itemToUpdate.id) {
+          return {
+            ...item,
+            quantity: item.quantity + loan.quantity,
+            status: 'In Storage',
+            borrower: undefined,
+            borrowDate: undefined,
+            borrowedQuantity: undefined,
+          };
+        }
+        return item;
+      });
+      setInventory(updatedInventory);
+      // Update loan history to mark the item as returned
+      const updatedLoanHistory = loanHistory.map(item =>
+        item.id === loan.id ? { ...item, returned: true } : item
+      );
+      setLoanHistory(updatedLoanHistory);
+    }
   };
 
   const downloadLoanHistory = () => {
@@ -230,6 +235,7 @@ const LoanHistory: React.FC<LoanHistoryProps> = ({ history, returnItem }) => {
                 <TableHead>Quantity</TableHead>
                 <TableHead>Borrower</TableHead>
                 <TableHead>Borrow Date</TableHead>
+                <TableHead>Returned</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -240,8 +246,11 @@ const LoanHistory: React.FC<LoanHistoryProps> = ({ history, returnItem }) => {
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>{item.borrower}</TableCell>
                   <TableCell>{format(item.borrowDate, "PPP")}</TableCell>
+                  <TableCell>{item.returned ? 'Yes' : 'No'}</TableCell>
                   <TableCell>
+                    {!item.returned && (
                       <Button onClick={() => returnItem(item)}>Return</Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
