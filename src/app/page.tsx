@@ -68,7 +68,7 @@ export default function Home() {
     <div className="container mx-auto py-10">
       <Card>
         <CardHeader>
-          <CardTitle>Club Inventory Tracker</CardTitle>
+          <CardTitle>Ilíberis Inventory Tracker</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="flex justify-between items-center">
@@ -83,3 +83,4 @@ export default function Home() {
     </div>
   );
 }
+

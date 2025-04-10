@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Club Inventory Tracker',
+  title: 'Ilíberis',
   description: 'Track and manage your club inventory with ease.',
 };
 
@@ -30,4 +30,5 @@ export default function RootLayout({
     </html>
   );
 }
+
 
