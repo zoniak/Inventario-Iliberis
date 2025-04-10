@@ -126,6 +126,21 @@ export default function Home() {
       }
   };
 
+  const downloadLoanHistory = () => {
+    const data = loanHistory.map(item =>
+      `${item.name},${item.quantity},${item.borrower},${format(item.borrowDate, "PPP")}`
+    ).join('\n');
+    const blob = new Blob([`Item Name,Quantity,Borrower,Borrow Date\n${data}`], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'loan_history.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
@@ -188,6 +203,9 @@ export default function Home() {
         </CardContent>
       </Card>
       <AddItemDialog open={open} setOpen={setOpen} onAddItem={addItem} />
+       <div className="flex justify-center mt-4">
+            <Button onClick={downloadLoanHistory}>Download History</Button>
+        </div>
     </div>
   );
 }
