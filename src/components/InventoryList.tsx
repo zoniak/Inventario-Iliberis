@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -10,14 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import StatusSelector from "@/components/StatusSelector";
 import { format } from "date-fns";
-import { Check, Circle } from "lucide-react";
-import * as React from "react";
 
 type InventoryItem = {
   id: string;
@@ -51,17 +44,8 @@ const initialInventory: InventoryItem[] = [
   },
 ];
 
-const statusColors = {
-  "In Storage": "bg-in-storage",
-  Borrowed: "bg-borrowed",
-};
-
 const InventoryList = () => {
   const [inventory, setInventory] = useState<InventoryItem[]>(initialInventory);
-  const [selectedStatus, setSelectedStatus] = useState<
-    "In Storage" | "Borrowed"
-  >("In Storage");
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
 
   const updateItemStatus = (
     itemId: string,
@@ -93,6 +77,7 @@ const InventoryList = () => {
             <TableHead>Status</TableHead>
             <TableHead>Borrower</TableHead>
             <TableHead>Borrow Date</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -101,19 +86,19 @@ const InventoryList = () => {
               <TableCell>{item.name}</TableCell>
               <TableCell>{item.quantity}</TableCell>
               <TableCell>
-                <div className="flex items-center space-x-2">
-                  <span
-                    className={`h-2 w-2 rounded-full ${
-                      statusColors[item.status]
-                    }`}
-                  ></span>
-                  <span>{item.status}</span>
-                </div>
+                {item.status}
               </TableCell>
               <TableCell>{item.borrower || "-"}</TableCell>
               <TableCell>
                 {item.borrowDate ? format(item.borrowDate, "PPP") : "-"}
               </TableCell>
+              <TableCell>
+                  <StatusSelector
+                    itemId={item.id}
+                    currentStatus={item.status}
+                    onStatusChange={updateItemStatus}
+                  />
+                </TableCell>
             </TableRow>
           ))}
         </TableBody>

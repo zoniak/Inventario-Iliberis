@@ -1,3 +1,4 @@
+"use client";
 
 import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -7,7 +8,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Check, Circle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import * as React from "react";
 
 type Status = "In Storage" | "Borrowed";
@@ -41,25 +42,23 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
     setBorrower(e.target.value);
   };
 
+  const returnItem = () => {
+    // Clear borrower and borrow date when returning an item
+    setBorrower("");
+    setDate(undefined);
+    onStatusChange(itemId, "In Storage", undefined, undefined);
+    setStatus("In Storage");
+  };
+
+  const borrowItem = () => {
+    onStatusChange(itemId, "Borrowed", borrower, date);
+    setStatus("Borrowed");
+  };
+
   return (
     <div>
-      <RadioGroup
-        defaultValue={status}
-        className="flex space-x-2"
-        onValueChange={(value) => handleStatusChange(value as Status)}
-      >
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="In Storage" id="in_storage" />
-          <Label htmlFor="in_storage">In Storage</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="Borrowed" id="borrowed" />
-          <Label htmlFor="borrowed">Borrowed</Label>
-        </div>
-      </RadioGroup>
-
-      {status === "Borrowed" && (
-        <div className="mt-4">
+      {currentStatus === "In Storage" ? (
+        <div>
           <Input
             type="text"
             placeholder="Borrower's Name"
@@ -92,7 +91,12 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
               />
             </PopoverContent>
           </Popover>
+          <Button onClick={borrowItem} disabled={!borrower || !date}>
+            Borrow
+          </Button>
         </div>
+      ) : (
+        <Button onClick={returnItem}>Return</Button>
       )}
     </div>
   );
