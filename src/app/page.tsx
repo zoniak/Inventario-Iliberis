@@ -189,7 +189,7 @@ export default function Home() {
       <Card>
         <CardHeader className="flex flex-row items-center">
           <Image
-            src="/iliberis_logo.png"
+            src="/logo.png"
             width={50}
             height={50}
             alt="Ilíberis Logo"
