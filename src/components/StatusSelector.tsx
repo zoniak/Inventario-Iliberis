@@ -15,43 +15,58 @@ type Status = "In Storage" | "Borrowed";
 
 interface StatusSelectorProps {
   itemId: string;
+  itemName: string;
+  itemQuantity: number;
   currentStatus: Status;
   onStatusChange: (
     itemId: string,
     newStatus: Status,
     borrower?: string,
-    borrowDate?: Date | null
+    borrowDate?: Date | null,
+    borrowQuantity?: number,
   ) => void;
 }
 
 const StatusSelector: React.FC<StatusSelectorProps> = ({
   itemId,
+  itemName,
+  itemQuantity,
   currentStatus,
   onStatusChange,
 }) => {
   const [status, setStatus] = useState<Status>(currentStatus);
   const [borrower, setBorrower] = useState<string>("");
   const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [borrowQuantity, setBorrowQuantity] = useState<number>(1);
 
   const handleStatusChange = (newStatus: Status) => {
     setStatus(newStatus);
-    onStatusChange(itemId, newStatus, borrower, date);
+    onStatusChange(itemId, newStatus, borrower, date, borrowQuantity);
   };
 
   const handleBorrowerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBorrower(e.target.value);
   };
 
+  const handleBorrowQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    setBorrowQuantity(value);
+  };
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    setDate(newDate);
+  };
+
   const returnItem = () => {
-    // Clear borrower and borrow date when returning an item
     setBorrower("");
     setDate(undefined);
-    onStatusChange(itemId, "In Storage", undefined, undefined);
+    setBorrowQuantity(1);
+    onStatusChange(itemId, "In Storage", undefined, undefined, 0);
     setStatus("In Storage");
   };
 
   const borrowItem = () => {
-    onStatusChange(itemId, "Borrowed", borrower, date);
+    onStatusChange(itemId, "Borrowed", borrower, date, borrowQuantity);
     setStatus("Borrowed");
   };
 
@@ -65,6 +80,15 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
             value={borrower}
             onChange={handleBorrowerChange}
             className="mb-2"
+          />
+          <Input
+            type="number"
+            placeholder="Quantity Borrowed"
+            value={borrowQuantity}
+            onChange={handleBorrowQuantityChange}
+            className="mb-2"
+            min="1"
+            max={itemQuantity}
           />
 
           <Popover>
@@ -83,7 +107,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={setDate}
+                onSelect={handleDateChange}
                 disabled={(date) =>
                   date > new Date() || date < new Date("2020-01-01")
                 }
@@ -91,7 +115,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
               />
             </PopoverContent>
           </Popover>
-          <Button onClick={borrowItem} disabled={!borrower || !date}>
+          <Button onClick={borrowItem} disabled={!borrower || !date || !borrowQuantity}>
             Borrow
           </Button>
         </div>
@@ -103,3 +127,5 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
 };
 
 export default StatusSelector;
+
+    

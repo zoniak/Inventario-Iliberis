@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 type InventoryItem = {
   id: string;
@@ -30,6 +31,7 @@ type InventoryItem = {
   status: "In Storage" | "Borrowed";
   borrower?: string;
   borrowDate?: Date | null;
+  borrowedQuantity?: number;
 };
 
 interface InventoryListProps {
@@ -42,23 +44,59 @@ interface InventoryListProps {
 const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, onUpdateItem, searchQuery }) => {
   const [open, setOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+    const { toast } = useToast();
 
   const handleStatusChange = (
     itemId: string,
     newStatus: "In Storage" | "Borrowed",
     borrower?: string,
-    borrowDate?: Date | null
+    borrowDate?: Date | null,
+    borrowQuantity?: number
   ) => {
-    const updatedItem = inventory.find(item => item.id === itemId);
-    if (updatedItem) {
-      const newItem = {
-        ...updatedItem,
-        status: newStatus,
-        borrower: borrower,
-        borrowDate: borrowDate,
-      };
-      onUpdateItem(newItem);
+    const updatedItemIndex = inventory.findIndex(item => item.id === itemId);
+    if (updatedItemIndex === -1) {
+      return; // Item not found
     }
+
+    const updatedItem = { ...inventory[updatedItemIndex] };
+    let updatedInventory = [...inventory];
+
+    if (newStatus === "Borrowed") {
+      if (borrowQuantity && borrowQuantity > 0 && borrowQuantity <= updatedItem.quantity) {
+        updatedItem.quantity -= borrowQuantity;
+        updatedItem.borrowedQuantity = borrowQuantity;
+        updatedItem.status = newStatus;
+        updatedItem.borrower = borrower;
+        updatedItem.borrowDate = borrowDate;
+
+        updatedInventory[updatedItemIndex] = updatedItem;
+          toast({
+              title: "Item Borrowed",
+              description: `${borrowQuantity} ${updatedItem.name}(s) borrowed by ${borrower}`,
+          });
+      } else {
+        toast({
+              title: "Error",
+              description: "Invalid borrow quantity",
+          });
+          return;
+      }
+    } else if (newStatus === "In Storage") {
+      if (updatedItem.borrowedQuantity) {
+        updatedItem.quantity += updatedItem.borrowedQuantity;
+        updatedItem.borrowedQuantity = 0;
+      }
+      updatedItem.status = newStatus;
+      updatedItem.borrower = undefined;
+      updatedItem.borrowDate = undefined;
+      updatedInventory[updatedItemIndex] = updatedItem;
+        toast({
+            title: "Item Returned",
+            description: `${updatedItem.name}(s) returned to storage`,
+        });
+    }
+
+    onUpdateItem(updatedItem);
   };
 
   const confirmDelete = (itemId: string) => {
@@ -107,6 +145,8 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
                 <div className="flex gap-2">
                   <StatusSelector
                     itemId={item.id}
+                    itemName={item.name}
+                    itemQuantity={item.quantity}
                     currentStatus={item.status}
                     onStatusChange={handleStatusChange}
                   />
@@ -139,3 +179,5 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
 };
 
 export default InventoryList;
+
+    

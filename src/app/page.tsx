@@ -16,6 +16,7 @@ type InventoryItem = {
   status: "In Storage" | "Borrowed";
   borrower?: string;
   borrowDate?: Date | null;
+  borrowedQuantity?: number;
 };
 
 export default function Home() {
@@ -34,6 +35,7 @@ export default function Home() {
       status: "Borrowed",
       borrower: "Alice Smith",
       borrowDate: new Date(),
+      borrowedQuantity: 2,
     },
     {
       id: "3",
@@ -92,4 +94,4 @@ export default function Home() {
   );
 }
 
-
+    
