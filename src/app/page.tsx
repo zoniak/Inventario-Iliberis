@@ -17,6 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type InventoryItem = {
   id: string;
@@ -37,6 +39,10 @@ type LoanHistoryItem = {
 };
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [open, setOpen] = useState(false);
   const [inventory, setInventory] = useState<InventoryItem[]>([
     {
@@ -63,6 +69,16 @@ export default function Home() {
   ]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loanHistory, setLoanHistory] = useState<LoanHistoryItem[]>([]);
+
+  const handleLogin = () => {
+    if (username === "Junta" && password === "Jorge") {
+      setIsLoggedIn(true);
+      setLoginError('');
+    } else {
+      setIsLoggedIn(false);
+      setLoginError('Invalid username or password');
+    }
+  };
 
   const addItem = (newItem: Omit<InventoryItem, 'id'>) => {
     setInventory(prevInventory => [
@@ -109,6 +125,44 @@ export default function Home() {
           setLoanHistory(prevHistory => prevHistory.filter(item => item.id !== loan.id));
       }
   };
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+        <Card className="w-96">
+          <CardHeader className="flex flex-row items-center">
+            <CardTitle>Login</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {loginError && <p className="text-red-500">{loginError}</p>}
+            <div className="grid gap-2">
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                placeholder="Username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                placeholder="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <Button onClick={handleLogin}>
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-10">
