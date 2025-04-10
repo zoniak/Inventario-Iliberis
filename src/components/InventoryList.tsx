@@ -153,13 +153,23 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
-                  <StatusSelector
-                    itemId={item.id}
-                    itemName={item.name}
-                    itemQuantity={item.quantity}
-                    currentStatus={item.status}
-                    onStatusChange={handleStatusChange}
-                  />
+                  {item.status === 'In Storage' ? (
+                    <StatusSelector
+                      itemId={item.id}
+                      itemName={item.name}
+                      itemQuantity={item.quantity}
+                      currentStatus={item.status}
+                      onStatusChange={handleStatusChange}
+                    />
+                  ) : (
+                    <StatusSelector
+                      itemId={item.id}
+                      itemName={item.name}
+                      itemQuantity={item.quantity}
+                      currentStatus={item.status}
+                      onStatusChange={handleStatusChange}
+                    />
+                  )}
                   <Button variant="destructive" size="sm" onClick={() => confirmDelete(item.id)}>
                     Delete
                   </Button>
