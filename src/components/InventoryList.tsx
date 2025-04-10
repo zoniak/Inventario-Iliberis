@@ -28,7 +28,7 @@ type InventoryItem = {
   id: string;
   name: string;
   quantity: number;
-  status: "In Storage" | "Borrowed";
+  status: "En Almacén" | "Prestado";
   borrower?: string;
   borrowDate?: Date | null;
   borrowedQuantity?: number;
@@ -49,7 +49,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
 
   const handleStatusChange = (
     itemId: string,
-    newStatus: "In Storage" | "Borrowed",
+    newStatus: "En Almacén" | "Prestado",
     borrower?: string,
     borrowDate?: Date | null,
     borrowQuantity?: number
@@ -62,7 +62,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
     const updatedItem = { ...inventory[updatedItemIndex] };
     let updatedInventory = [...inventory];
 
-    if (newStatus === "Borrowed") {
+    if (newStatus === "Prestado") {
       if (borrowQuantity && borrowQuantity > 0 && borrowQuantity <= updatedItem.quantity) {
         updatedItem.quantity -= borrowQuantity;
         updatedItem.borrowedQuantity = borrowQuantity;
@@ -72,8 +72,8 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
 
         updatedInventory[updatedItemIndex] = updatedItem;
         toast({
-            title: "Item Borrowed",
-            description: `${borrowQuantity} ${updatedItem.name}(s) borrowed by ${borrower}`,
+            title: "Objeto Prestado",
+            description: `${borrowQuantity} ${updatedItem.name}(s) prestado por ${borrower}`,
         });
         if (borrower && borrowDate) {
           onAddLoanHistory({
@@ -87,11 +87,11 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
       } else {
         toast({
               title: "Error",
-              description: "Invalid borrow quantity",
+              description: "Cantidad de préstamo inválida",
           });
           return;
       }
-    } else if (newStatus === "In Storage") {
+    } else if (newStatus === "En Almacén") {
       if (updatedItem.borrowedQuantity) {
         updatedItem.quantity += updatedItem.borrowedQuantity;
         updatedItem.borrowedQuantity = 0;
@@ -101,8 +101,8 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
       updatedItem.borrowDate = undefined;
       updatedInventory[updatedItemIndex] = updatedItem;
         toast({
-            title: "Item Returned",
-            description: `${updatedItem.name}(s) returned to storage`,
+            title: "Objeto Devuelto",
+            description: `${updatedItem.name}(s) devuelto al almacén`,
         });
     }
 
@@ -131,12 +131,12 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Borrower</TableHead>
-            <TableHead>Borrow Date</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead>Nombre</TableHead>
+            <TableHead>Cantidad</TableHead>
+            <TableHead>Estado</TableHead>
+            <TableHead>Prestatario</TableHead>
+            <TableHead>Fecha de Préstamo</TableHead>
+            <TableHead>Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -153,7 +153,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
-                  {item.status === 'In Storage' ? (
+                  {item.status === 'En Almacén' ? (
                     <StatusSelector
                       itemId={item.id}
                       itemName={item.name}
@@ -171,7 +171,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
                     />
                   )}
                   <Button variant="destructive" size="sm" onClick={() => confirmDelete(item.id)}>
-                    Delete
+                    Borrar
                   </Button>
                 </div>
               </TableCell>
@@ -183,14 +183,14 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. Are you sure you want to delete this item?
+              Esta acción no se puede deshacer. ¿Estás seguro de que quieres borrar este objeto?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteItemId(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteItem}>Delete</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setDeleteItemId(null)}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={deleteItem}>Borrar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

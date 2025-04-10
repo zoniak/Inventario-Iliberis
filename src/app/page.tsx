@@ -24,7 +24,7 @@ type InventoryItem = {
   id: string;
   name: string;
   quantity: number;
-  status: "In Storage" | "Borrowed";
+  status: "En Almacén" | "Prestado";
   borrower?: string;
   borrowDate?: Date | null;
   borrowedQuantity?: number;
@@ -48,24 +48,24 @@ export default function Home() {
   const [inventory, setInventory] = useState<InventoryItem[]>([
     {
       id: "1",
-      name: "Football",
+      name: "Balón de Fútbol",
       quantity: 10,
-      status: "In Storage",
+      status: "En Almacén",
     },
     {
       id: "2",
-      name: "Basketball",
+      name: "Balón de Baloncesto",
       quantity: 5,
-      status: "Borrowed",
+      status: "Prestado",
       borrower: "Alice Smith",
       borrowDate: new Date(),
       borrowedQuantity: 2,
     },
     {
       id: "3",
-      name: "Cones",
+      name: "Conos",
       quantity: 20,
-      status: "In Storage",
+      status: "En Almacén",
     },
   ]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,7 +77,7 @@ export default function Home() {
       setLoginError('');
     } else {
       setIsLoggedIn(false);
-      setLoginError('Invalid username or password');
+      setLoginError('Usuario o contraseña inválidos');
     }
   };
 
@@ -114,7 +114,7 @@ export default function Home() {
           return {
             ...item,
             quantity: item.quantity + loan.quantity,
-            status: 'In Storage',
+            status: 'En Almacén',
             borrower: undefined,
             borrowDate: undefined,
             borrowedQuantity: undefined,
@@ -151,32 +151,32 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
         <Card className="w-96">
           <CardHeader className="flex flex-row items-center">
-            <CardTitle>Login</CardTitle>
+            <CardTitle>Inicio de Sesión</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             {loginError && <p className="text-red-500">{loginError}</p>}
             <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Usuario</Label>
               <Input
                 id="username"
-                placeholder="Username"
+                placeholder="Usuario"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <Input
                 id="password"
-                placeholder="Password"
+                placeholder="Contraseña"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <Button onClick={handleLogin}>
-              Sign In
+              Iniciar Sesión
             </Button>
           </CardContent>
         </Card>
@@ -200,7 +200,7 @@ export default function Home() {
         <CardContent className="flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <SearchBar onSearch={handleSearch} />
-            <Button onClick={() => setOpen(true)}>Add Item</Button>
+            <Button onClick={() => setOpen(true)}>Añadir Objeto</Button>
           </div>
           <InventoryList inventory={inventory} onDeleteItem={deleteItem} onUpdateItem={updateItem} searchQuery={searchQuery} onAddLoanHistory={addLoanHistory} />
           <Reporting inventory={inventory} />
@@ -209,7 +209,7 @@ export default function Home() {
       </Card>
       <AddItemDialog open={open} setOpen={setOpen} onAddItem={addItem} />
        <div className="flex justify-center mt-4">
-            <Button onClick={downloadLoanHistory}>Download History</Button>
+            <Button onClick={downloadLoanHistory}>Descargar Historial</Button>
         </div>
     </div>
   );
@@ -224,19 +224,19 @@ const LoanHistory: React.FC<LoanHistoryProps> = ({ history, returnItem }) => {
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle>Loan History</CardTitle>
+        <CardTitle>Historial de Préstamos</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Item Name</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Borrower</TableHead>
-                <TableHead>Borrow Date</TableHead>
-                <TableHead>Returned</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>Nombre del Objeto</TableHead>
+                <TableHead>Cantidad</TableHead>
+                <TableHead>Prestatario</TableHead>
+                <TableHead>Fecha de Préstamo</TableHead>
+                <TableHead>Devuelto</TableHead>
+                <TableHead>Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -246,10 +246,10 @@ const LoanHistory: React.FC<LoanHistoryProps> = ({ history, returnItem }) => {
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>{item.borrower}</TableCell>
                   <TableCell>{format(item.borrowDate, "PPP")}</TableCell>
-                  <TableCell>{item.returned ? 'Yes' : 'No'}</TableCell>
+                  <TableCell>{item.returned ? 'Sí' : 'No'}</TableCell>
                   <TableCell>
                     {!item.returned && (
-                      <Button onClick={() => returnItem(item)}>Return</Button>
+                      <Button onClick={() => returnItem(item)}>Devolver</Button>
                     )}
                   </TableCell>
                 </TableRow>

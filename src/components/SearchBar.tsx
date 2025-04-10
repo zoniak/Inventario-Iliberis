@@ -19,7 +19,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     <div className="relative">
       <Input
         type="text"
-        placeholder="Search inventory..."
+        placeholder="Buscar en el inventario..."
         className="pl-10"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
@@ -30,4 +30,3 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 };
 
 export default SearchBar;
-

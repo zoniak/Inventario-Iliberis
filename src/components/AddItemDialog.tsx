@@ -17,7 +17,7 @@ import { useState } from "react";
 interface AddItemDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onAddItem: (item: { name: string; quantity: number; status: "In Storage" | "Borrowed" }) => void;
+  onAddItem: (item: { name: string; quantity: number; status: "En Almacén" | "Prestado" }) => void;
 }
 
 const AddItemDialog: React.FC<AddItemDialogProps> = ({ open, setOpen, onAddItem }) => {
@@ -29,7 +29,7 @@ const AddItemDialog: React.FC<AddItemDialogProps> = ({ open, setOpen, onAddItem 
       onAddItem({
         name: itemName,
         quantity: itemQuantity,
-        status: "In Storage", // Default status
+        status: "En Almacén", // Default status
       });
       setItemName("");
       setItemQuantity(0);
@@ -41,15 +41,15 @@ const AddItemDialog: React.FC<AddItemDialogProps> = ({ open, setOpen, onAddItem 
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Add New Item</AlertDialogTitle>
+          <AlertDialogTitle>Añadir Nuevo Objeto</AlertDialogTitle>
           <AlertDialogDescription>
-            Enter the name and quantity of the item to add to the inventory.
+            Introduce el nombre y la cantidad del objeto a añadir al inventario.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Name
+              Nombre
             </Label>
             <Input
               id="name"
@@ -60,7 +60,7 @@ const AddItemDialog: React.FC<AddItemDialogProps> = ({ open, setOpen, onAddItem 
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="quantity" className="text-right">
-              Quantity
+              Cantidad
             </Label>
             <Input
               type="number"
@@ -72,8 +72,8 @@ const AddItemDialog: React.FC<AddItemDialogProps> = ({ open, setOpen, onAddItem 
           </div>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleAddItem}>Add</AlertDialogAction>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={handleAddItem}>Añadir</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import * as React from "react";
 
-type Status = "In Storage" | "Borrowed";
+type Status = "En Almacén" | "Prestado";
 
 interface StatusSelectorProps {
   itemId: string;
@@ -52,7 +52,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
   };
 
   const borrowItem = () => {
-      onStatusChange(itemId, "Borrowed", borrower, date, borrowQuantity);
+      onStatusChange(itemId, "Prestado", borrower, date, borrowQuantity);
   };
 
   return (
@@ -61,14 +61,14 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
           <div>
               <Input
                   type="text"
-                  placeholder="Borrower's Name"
+                  placeholder="Nombre del Prestatario"
                   value={borrower}
                   onChange={handleBorrowerChange}
                   className="mb-2"
               />
               <Input
                   type="number"
-                  placeholder="Quantity Borrowed"
+                  placeholder="Cantidad Prestada"
                   value={borrowQuantity}
                   onChange={handleBorrowQuantityChange}
                   className="mb-2"
@@ -85,7 +85,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
                               !date && "text-muted-foreground"
                           )}
                       >
-                          {date ? format(date, "PPP") : <span>Pick a date</span>}
+                          {date ? format(date, "PPP") : <span>Elige una fecha</span>}
                       </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="center" side="bottom">
@@ -101,7 +101,7 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
                   </PopoverContent>
               </Popover>
               <Button onClick={borrowItem} disabled={!borrower || !date || !borrowQuantity}>
-                  Borrow
+                  Prestar
               </Button>
           </div>
       }
