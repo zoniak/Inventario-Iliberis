@@ -39,9 +39,10 @@ interface InventoryListProps {
   onDeleteItem: (id: string) => void;
   onUpdateItem: (item: InventoryItem) => void;
   searchQuery: string;
+  onAddLoanHistory: (item: { name: string; quantity: number; borrower: string; borrowDate: Date }) => void;
 }
 
-const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, onUpdateItem, searchQuery }) => {
+const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, onUpdateItem, searchQuery, onAddLoanHistory }) => {
   const [open, setOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
     const { toast } = useToast();
@@ -70,10 +71,18 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
         updatedItem.borrowDate = borrowDate;
 
         updatedInventory[updatedItemIndex] = updatedItem;
-          toast({
-              title: "Item Borrowed",
-              description: `${borrowQuantity} ${updatedItem.name}(s) borrowed by ${borrower}`,
+        toast({
+            title: "Item Borrowed",
+            description: `${borrowQuantity} ${updatedItem.name}(s) borrowed by ${borrower}`,
+        });
+        if (borrower && borrowDate) {
+          onAddLoanHistory({
+            name: updatedItem.name,
+            quantity: borrowQuantity,
+            borrower: borrower,
+            borrowDate: borrowDate,
           });
+        }
       } else {
         toast({
               title: "Error",
@@ -179,5 +188,3 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
 };
 
 export default InventoryList;
-
-    

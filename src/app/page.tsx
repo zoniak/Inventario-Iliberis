@@ -8,6 +8,15 @@ import { Button } from "@/components/ui/button";
 import AddItemDialog from "@/components/AddItemDialog";
 import { useState } from "react";
 import Image from 'next/image';
+import { format } from "date-fns";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type InventoryItem = {
   id: string;
@@ -17,6 +26,13 @@ type InventoryItem = {
   borrower?: string;
   borrowDate?: Date | null;
   borrowedQuantity?: number;
+};
+
+type LoanHistoryItem = {
+  name: string;
+  quantity: number;
+  borrower: string;
+  borrowDate: Date;
 };
 
 export default function Home() {
@@ -45,6 +61,7 @@ export default function Home() {
     },
   ]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loanHistory, setLoanHistory] = useState<LoanHistoryItem[]>([]);
 
   const addItem = (newItem: Omit<InventoryItem, 'id'>) => {
     setInventory(prevInventory => [
@@ -67,6 +84,10 @@ export default function Home() {
     setSearchQuery(query);
   };
 
+  const addLoanHistory = (item: LoanHistoryItem) => {
+    setLoanHistory(prevHistory => [...prevHistory, item]);
+  };
+
   return (
     <div className="container mx-auto py-10">
       <Card>
@@ -85,8 +106,9 @@ export default function Home() {
             <SearchBar onSearch={handleSearch} />
             <Button onClick={() => setOpen(true)}>Add Item</Button>
           </div>
-          <InventoryList inventory={inventory} onDeleteItem={deleteItem} onUpdateItem={updateItem} searchQuery={searchQuery} />
+          <InventoryList inventory={inventory} onDeleteItem={deleteItem} onUpdateItem={updateItem} searchQuery={searchQuery} onAddLoanHistory={addLoanHistory} />
           <Reporting inventory={inventory} />
+          <LoanHistory history={loanHistory} />
         </CardContent>
       </Card>
       <AddItemDialog open={open} setOpen={setOpen} onAddItem={addItem} />
@@ -94,4 +116,40 @@ export default function Home() {
   );
 }
 
-    
+interface LoanHistoryProps {
+  history: LoanHistoryItem[];
+}
+
+const LoanHistory: React.FC<LoanHistoryProps> = ({ history }) => {
+  return (
+    <Card className="mt-4">
+      <CardHeader>
+        <CardTitle>Loan History</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item Name</TableHead>
+                <TableHead>Quantity</TableHead>
+                <TableHead>Borrower</TableHead>
+                <TableHead>Borrow Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {history.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{item.borrower}</TableCell>
+                  <TableCell>{format(item.borrowDate, "PPP")}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
