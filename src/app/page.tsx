@@ -29,6 +29,7 @@ type InventoryItem = {
 };
 
 type LoanHistoryItem = {
+  id: string;
   name: string;
   quantity: number;
   borrower: string;
@@ -88,6 +89,27 @@ export default function Home() {
     setLoanHistory(prevHistory => [...prevHistory, item]);
   };
 
+  const returnItemToInventory = (loan: LoanHistoryItem) => {
+      const itemToUpdate = inventory.find(item => item.name === loan.name);
+      if (itemToUpdate) {
+          const updatedInventory = inventory.map(item => {
+              if (item.id === itemToUpdate.id) {
+                  return {
+                      ...item,
+                      quantity: item.quantity + loan.quantity,
+                      status: 'In Storage',
+                      borrower: undefined,
+                      borrowDate: undefined,
+                      borrowedQuantity: undefined,
+                  };
+              }
+              return item;
+          });
+          setInventory(updatedInventory);
+          setLoanHistory(prevHistory => prevHistory.filter(item => item.id !== loan.id));
+      }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <Card>
@@ -108,7 +130,7 @@ export default function Home() {
           </div>
           <InventoryList inventory={inventory} onDeleteItem={deleteItem} onUpdateItem={updateItem} searchQuery={searchQuery} onAddLoanHistory={addLoanHistory} />
           <Reporting inventory={inventory} />
-          <LoanHistory history={loanHistory} />
+          <LoanHistory history={loanHistory} returnItem={returnItemToInventory} />
         </CardContent>
       </Card>
       <AddItemDialog open={open} setOpen={setOpen} onAddItem={addItem} />
@@ -118,9 +140,10 @@ export default function Home() {
 
 interface LoanHistoryProps {
   history: LoanHistoryItem[];
+  returnItem: (loan: LoanHistoryItem) => void;
 }
 
-const LoanHistory: React.FC<LoanHistoryProps> = ({ history }) => {
+const LoanHistory: React.FC<LoanHistoryProps> = ({ history, returnItem }) => {
   return (
     <Card className="mt-4">
       <CardHeader>
@@ -135,6 +158,7 @@ const LoanHistory: React.FC<LoanHistoryProps> = ({ history }) => {
                 <TableHead>Quantity</TableHead>
                 <TableHead>Borrower</TableHead>
                 <TableHead>Borrow Date</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -144,6 +168,9 @@ const LoanHistory: React.FC<LoanHistoryProps> = ({ history }) => {
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>{item.borrower}</TableCell>
                   <TableCell>{format(item.borrowDate, "PPP")}</TableCell>
+                  <TableCell>
+                      <Button onClick={() => returnItem(item)}>Return</Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

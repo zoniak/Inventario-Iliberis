@@ -39,7 +39,7 @@ interface InventoryListProps {
   onDeleteItem: (id: string) => void;
   onUpdateItem: (item: InventoryItem) => void;
   searchQuery: string;
-  onAddLoanHistory: (item: { name: string; quantity: number; borrower: string; borrowDate: Date }) => void;
+  onAddLoanHistory: (item: { id: string; name: string; quantity: number; borrower: string; borrowDate: Date }) => void;
 }
 
 const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, onUpdateItem, searchQuery, onAddLoanHistory }) => {
@@ -77,6 +77,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
         });
         if (borrower && borrowDate) {
           onAddLoanHistory({
+            id: String(Date.now()),
             name: updatedItem.name,
             quantity: borrowQuantity,
             borrower: borrower,
