@@ -1,12 +1,15 @@
-
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const Reporting = () => {
-  // Placeholder data
-  const inStorageCount = 15;
-  const borrowedCount = 5;
+interface ReportingProps {
+  inventory: { status: string }[];
+}
+
+const Reporting: React.FC<ReportingProps> = ({ inventory }) => {
+  // Calculate counts based on the inventory prop
+  const inStorageCount = inventory.filter(item => item.status === 'In Storage').length;
+  const borrowedCount = inventory.filter(item => item.status === 'Borrowed').length;
 
   return (
     <Card>

@@ -8,8 +8,46 @@ import { Button } from "@/components/ui/button";
 import AddItemDialog from "@/components/AddItemDialog";
 import { useState } from "react";
 
+type InventoryItem = {
+  id: string;
+  name: string;
+  quantity: number;
+  status: "In Storage" | "Borrowed";
+  borrower?: string;
+  borrowDate?: Date | null;
+};
+
 export default function Home() {
   const [open, setOpen] = useState(false);
+  const [inventory, setInventory] = useState<InventoryItem[]>([
+    {
+      id: "1",
+      name: "Football",
+      quantity: 10,
+      status: "In Storage",
+    },
+    {
+      id: "2",
+      name: "Basketball",
+      quantity: 5,
+      status: "Borrowed",
+      borrower: "Alice Smith",
+      borrowDate: new Date(),
+    },
+    {
+      id: "3",
+      name: "Cones",
+      quantity: 20,
+      status: "In Storage",
+    },
+  ]);
+
+  const addItem = (newItem: Omit<InventoryItem, 'id'>) => {
+    setInventory(prevInventory => [
+      ...prevInventory,
+      { ...newItem, id: String(Date.now()) } // Generate a unique ID
+    ]);
+  };
 
   return (
     <div className="container mx-auto py-10">
@@ -22,12 +60,11 @@ export default function Home() {
             <SearchBar />
             <Button onClick={() => setOpen(true)}>Add Item</Button>
           </div>
-          <InventoryList />
-          <Reporting />
+          <InventoryList inventory={inventory} />
+          <Reporting inventory={inventory} />
         </CardContent>
       </Card>
-      <AddItemDialog open={open} setOpen={setOpen} />
+      <AddItemDialog open={open} setOpen={setOpen} onAddItem={addItem} />
     </div>
   );
 }
-

@@ -9,7 +9,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,16 +17,24 @@ import { useState } from "react";
 interface AddItemDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  onAddItem: (item: { name: string; quantity: number; status: "In Storage" | "Borrowed" }) => void;
 }
 
-const AddItemDialog: React.FC<AddItemDialogProps> = ({ open, setOpen }) => {
+const AddItemDialog: React.FC<AddItemDialogProps> = ({ open, setOpen, onAddItem }) => {
   const [itemName, setItemName] = useState("");
   const [itemQuantity, setItemQuantity] = useState(0);
 
   const handleAddItem = () => {
-    // Handle adding item logic here, such as updating the inventory list
-    console.log("Adding item:", itemName, itemQuantity);
-    setOpen(false); // Close the dialog after adding
+    if (itemName && itemQuantity > 0) {
+      onAddItem({
+        name: itemName,
+        quantity: itemQuantity,
+        status: "In Storage", // Default status
+      });
+      setItemName("");
+      setItemQuantity(0);
+      setOpen(false); // Close the dialog after adding
+    }
   };
 
   return (

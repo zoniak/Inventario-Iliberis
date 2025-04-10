@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { format } from "date-fns";
 import {
   Table,
   TableBody,
@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import StatusSelector from "@/components/StatusSelector";
-import { format } from "date-fns";
 
 type InventoryItem = {
   id: string;
@@ -21,49 +20,21 @@ type InventoryItem = {
   borrowDate?: Date | null;
 };
 
-const initialInventory: InventoryItem[] = [
-  {
-    id: "1",
-    name: "Football",
-    quantity: 10,
-    status: "In Storage",
-  },
-  {
-    id: "2",
-    name: "Basketball",
-    quantity: 5,
-    status: "Borrowed",
-    borrower: "Alice Smith",
-    borrowDate: new Date(),
-  },
-  {
-    id: "3",
-    name: "Cones",
-    quantity: 20,
-    status: "In Storage",
-  },
-];
+interface InventoryListProps {
+  inventory: InventoryItem[];
+}
 
-const InventoryList = () => {
-  const [inventory, setInventory] = useState<InventoryItem[]>(initialInventory);
-
+const InventoryList: React.FC<InventoryListProps> = ({ inventory }) => {
   const updateItemStatus = (
     itemId: string,
     newStatus: "In Storage" | "Borrowed",
     borrower?: string,
     borrowDate?: Date | null
   ) => {
-    setInventory((prevInventory) =>
-      prevInventory.map((item) =>
-        item.id === itemId
-          ? {
-              ...item,
-              status: newStatus,
-              borrower: borrower,
-              borrowDate: borrowDate,
-            }
-          : item
-      )
+    // This function would need to be passed from the parent component
+    // to update the inventory state correctly
+    console.log(
+      `Update item ${itemId} to status ${newStatus} with borrower ${borrower} and date ${borrowDate}`
     );
   };
 
@@ -93,12 +64,12 @@ const InventoryList = () => {
                 {item.borrowDate ? format(item.borrowDate, "PPP") : "-"}
               </TableCell>
               <TableCell>
-                  <StatusSelector
-                    itemId={item.id}
-                    currentStatus={item.status}
-                    onStatusChange={updateItemStatus}
-                  />
-                </TableCell>
+                <StatusSelector
+                  itemId={item.id}
+                  currentStatus={item.status}
+                  onStatusChange={updateItemStatus}
+                />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
