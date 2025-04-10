@@ -36,9 +36,10 @@ interface InventoryListProps {
   inventory: InventoryItem[];
   onDeleteItem: (id: string) => void;
   onUpdateItem: (item: InventoryItem) => void;
+  searchQuery: string;
 }
 
-const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, onUpdateItem }) => {
+const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, onUpdateItem, searchQuery }) => {
   const [open, setOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
@@ -73,6 +74,10 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
     }
   };
 
+  const filteredInventory = inventory.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -87,7 +92,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, 
           </TableRow>
         </TableHeader>
         <TableBody>
-          {inventory.map((item) => (
+          {filteredInventory.map((item) => (
             <TableRow key={item.id}>
               <TableCell>{item.name}</TableCell>
               <TableCell>{item.quantity}</TableCell>

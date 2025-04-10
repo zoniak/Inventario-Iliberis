@@ -41,6 +41,7 @@ export default function Home() {
       status: "In Storage",
     },
   ]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const addItem = (newItem: Omit<InventoryItem, 'id'>) => {
     setInventory(prevInventory => [
@@ -59,6 +60,10 @@ export default function Home() {
     );
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
     <div className="container mx-auto py-10">
       <Card>
@@ -67,10 +72,10 @@ export default function Home() {
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="flex justify-between items-center">
-            <SearchBar />
+            <SearchBar onSearch={handleSearch} />
             <Button onClick={() => setOpen(true)}>Add Item</Button>
           </div>
-          <InventoryList inventory={inventory} onDeleteItem={deleteItem} onUpdateItem={updateItem} />
+          <InventoryList inventory={inventory} onDeleteItem={deleteItem} onUpdateItem={updateItem} searchQuery={searchQuery} />
           <Reporting inventory={inventory} />
         </CardContent>
       </Card>
