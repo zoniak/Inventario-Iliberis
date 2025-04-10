@@ -49,6 +49,16 @@ export default function Home() {
     ]);
   };
 
+  const deleteItem = (id: string) => {
+    setInventory(prevInventory => prevInventory.filter(item => item.id !== id));
+  };
+
+  const updateItem = (updatedItem: InventoryItem) => {
+    setInventory(prevInventory =>
+      prevInventory.map(item => (item.id === updatedItem.id ? updatedItem : item))
+    );
+  };
+
   return (
     <div className="container mx-auto py-10">
       <Card>
@@ -60,7 +70,7 @@ export default function Home() {
             <SearchBar />
             <Button onClick={() => setOpen(true)}>Add Item</Button>
           </div>
-          <InventoryList inventory={inventory} />
+          <InventoryList inventory={inventory} onDeleteItem={deleteItem} onUpdateItem={updateItem} />
           <Reporting inventory={inventory} />
         </CardContent>
       </Card>

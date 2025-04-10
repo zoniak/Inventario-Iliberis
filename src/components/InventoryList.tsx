@@ -10,6 +10,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import StatusSelector from "@/components/StatusSelector";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 type InventoryItem = {
   id: string;
@@ -22,20 +34,43 @@ type InventoryItem = {
 
 interface InventoryListProps {
   inventory: InventoryItem[];
+  onDeleteItem: (id: string) => void;
+  onUpdateItem: (item: InventoryItem) => void;
 }
 
-const InventoryList: React.FC<InventoryListProps> = ({ inventory }) => {
-  const updateItemStatus = (
+const InventoryList: React.FC<InventoryListProps> = ({ inventory, onDeleteItem, onUpdateItem }) => {
+  const [open, setOpen] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+
+  const handleStatusChange = (
     itemId: string,
     newStatus: "In Storage" | "Borrowed",
     borrower?: string,
     borrowDate?: Date | null
   ) => {
-    // This function would need to be passed from the parent component
-    // to update the inventory state correctly
-    console.log(
-      `Update item ${itemId} to status ${newStatus} with borrower ${borrower} and date ${borrowDate}`
-    );
+    const updatedItem = inventory.find(item => item.id === itemId);
+    if (updatedItem) {
+      const newItem = {
+        ...updatedItem,
+        status: newStatus,
+        borrower: borrower,
+        borrowDate: borrowDate,
+      };
+      onUpdateItem(newItem);
+    }
+  };
+
+  const confirmDelete = (itemId: string) => {
+    setOpen(true);
+    setDeleteItemId(itemId);
+  };
+
+  const deleteItem = () => {
+    if (deleteItemId) {
+      onDeleteItem(deleteItemId);
+      setOpen(false);
+      setDeleteItemId(null);
+    }
   };
 
   return (
@@ -64,16 +99,36 @@ const InventoryList: React.FC<InventoryListProps> = ({ inventory }) => {
                 {item.borrowDate ? format(item.borrowDate, "PPP") : "-"}
               </TableCell>
               <TableCell>
-                <StatusSelector
-                  itemId={item.id}
-                  currentStatus={item.status}
-                  onStatusChange={updateItemStatus}
-                />
+                <div className="flex gap-2">
+                  <StatusSelector
+                    itemId={item.id}
+                    currentStatus={item.status}
+                    onStatusChange={handleStatusChange}
+                  />
+                  <Button variant="destructive" size="sm" onClick={() => confirmDelete(item.id)}>
+                    Delete
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. Are you sure you want to delete this item?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteItemId(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={deleteItem}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
