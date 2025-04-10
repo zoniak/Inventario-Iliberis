@@ -120,12 +120,60 @@ const StatusSelector: React.FC<StatusSelectorProps> = ({
           </Button>
         </div>
       ) : (
-        <Button onClick={returnItem}>Return</Button>
+          <>
+              {itemQuantity > 0 && (
+                  <div>
+                      <Input
+                          type="text"
+                          placeholder="Borrower's Name"
+                          value={borrower}
+                          onChange={handleBorrowerChange}
+                          className="mb-2"
+                      />
+                      <Input
+                          type="number"
+                          placeholder="Quantity Borrowed"
+                          value={borrowQuantity}
+                          onChange={handleBorrowQuantityChange}
+                          className="mb-2"
+                          min="1"
+                          max={itemQuantity}
+                      />
+
+                      <Popover>
+                          <PopoverTrigger asChild>
+                              <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                      "w-[240px] justify-start text-left font-normal",
+                                      !date && "text-muted-foreground"
+                                  )}
+                              >
+                                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                              </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="center" side="bottom">
+                              <Calendar
+                                  mode="single"
+                                  selected={date}
+                                  onSelect={handleDateChange}
+                                  disabled={(date) =>
+                                      date > new Date() || date < new Date("2020-01-01")
+                                  }
+                                  initialFocus
+                              />
+                          </PopoverContent>
+                      </Popover>
+                      <Button onClick={borrowItem} disabled={!borrower || !date || !borrowQuantity}>
+                          Borrow
+                      </Button>
+                  </div>
+              )}
+              <Button onClick={returnItem}>Return</Button>
+          </>
       )}
     </div>
   );
 };
 
 export default StatusSelector;
-
-    
