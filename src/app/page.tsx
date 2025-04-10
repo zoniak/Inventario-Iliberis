@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AddItemDialog from "@/components/AddItemDialog";
 import { useState } from "react";
+import Image from 'next/image';
 
 type InventoryItem = {
   id: string;
@@ -67,8 +68,15 @@ export default function Home() {
   return (
     <div className="container mx-auto py-10">
       <Card>
-        <CardHeader>
-          <CardTitle>Ilíberis Inventory Tracker</CardTitle>
+        <CardHeader className="flex flex-row items-center">
+          <Image
+            src="/iliberis_logo.png"
+            width={50}
+            height={50}
+            alt="Ilíberis Logo"
+            className="mr-4"
+          />
+          <CardTitle>Ilíberis</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="flex justify-between items-center">
@@ -83,4 +91,5 @@ export default function Home() {
     </div>
   );
 }
+
 
